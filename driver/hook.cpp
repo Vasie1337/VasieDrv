@@ -5,22 +5,21 @@ INT64 __fastcall hook::Hook(hook::data* a1, void* a2, void* a3, void* a4, void* 
     if ((!a1) || (ExGetPreviousMode() != UserMode || a1->code != 74633))
         return Original(a1, a2, a3, a4, a5, a6);
 
-    PEPROCESS src = process::findbypid(a1->src);
-    PEPROCESS dest = process::findbypid(a1->dest);
+    PEPROCESS target = process::findbypid(a1->target);
 
-    if (!src || !dest)
+    if (!target)
         return NULL;
 
     switch (a1->type)
     {
     case READ:
-        process::read(src, a1->addr, dest, a1->buff, a1->size);
+        process::read(target, a1->addr, IoGetCurrentProcess(), a1->buff, a1->size);
         break;
     case WRITE:
-        process::write(src, a1->buff, dest, a1->addr, a1->size);
+        process::write(IoGetCurrentProcess(), a1->buff, target, a1->addr, a1->size);
         break;
     case BASE:
-        process::getbase(src, dest, a1->buff);
+        process::getbase(target, IoGetCurrentProcess(), a1->buff);
         break;
     }
 

@@ -32,8 +32,7 @@ uint64_t c_driver::getBase()
 	d.code = 74633;
 	d.buff = (uint64_t)&Buffer;
 	d.type = BASE;
-	d.src = targetPid;
-	d.dest = GetCurrentProcessId();
+	d.target = targetPid;
 
 	Original(&d, NULL, NULL, NULL, NULL, NULL);
 

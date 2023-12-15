@@ -19,8 +19,7 @@ class hook {
 		uint64_t buff;
 		SIZE_T size;
 
-		uint64_t src;
-		uint64_t dest;
+		uint64_t target;
 
 		enum type type;
 	};

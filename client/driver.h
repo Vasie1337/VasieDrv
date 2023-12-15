@@ -19,8 +19,7 @@ private:
 		uint64_t buff;
 		SIZE_T size;
 
-		uint64_t src;
-		uint64_t dest;
+		uint64_t target;
 
 		enum type type;
 	};
@@ -50,8 +49,7 @@ inline T c_driver::readMem(uint64_t Addres, SIZE_T Size)
 	d.buff = (uint64_t)&Buffer;
 	d.size = Size;
 	d.type = READ;
-	d.src = targetPid;
-	d.dest = GetCurrentProcessId();
+	d.target = targetPid;
 
 	Original(&d, NULL, NULL, NULL, NULL, NULL);
 
@@ -67,8 +65,7 @@ inline void c_driver::writeMem(uint64_t Addres, T Buffer, SIZE_T Size)
 	d.buff = (uint64_t)&Buffer;
 	d.size = Size;
 	d.type = WRITE;
-	d.dest = targetPid;
-	d.src = GetCurrentProcessId();
+	d.target = targetPid;
 
 	Original(&d, NULL, NULL, NULL, NULL, NULL);
 }
