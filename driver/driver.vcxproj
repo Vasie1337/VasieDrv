@@ -79,6 +79,7 @@
     <DriverTargetPlatform>Universal</DriverTargetPlatform>
     <Driver_SpectreMitigation>false</Driver_SpectreMitigation>
     <CharacterSet>Unicode</CharacterSet>
+    <ALLOW_DATE_TIME>1</ALLOW_DATE_TIME>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
     <TargetVersion>Windows10</TargetVersion>
@@ -114,6 +115,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -163,19 +165,34 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="hook.cpp" />
+    <ClCompile Include="mem.cpp" />
     <ClCompile Include="process.cpp" />
     <ClCompile Include="util.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\3rd\CodeVirtualizer\VirtualizerSDK.h" />
+    <ClInclude Include="..\3rd\Themida\ThemidaSDK.h" />
+    <ClInclude Include="..\3rd\VMProtect\VMProtectSDK.h" />
     <ClInclude Include="hook.h" />
     <ClInclude Include="ia32.hpp" />
+    <ClInclude Include="junkcode.h" />
+    <ClInclude Include="mem.h" />
     <ClInclude Include="nt.h" />
-    <ClInclude Include="pe64.h" />
     <ClInclude Include="process.h" />
+    <ClInclude Include="skCrypter.h" />
     <ClInclude Include="util.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\3rd\CodeVirtualizer\VirtualizerSDK64.lib" />
+    <Library Include="..\3rd\Themida\SecureEngineSDK64.lib" />
+    <Library Include="..\3rd\VMProtect\VMProtectSDK64.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <MASM Include="junkcode.asm" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
   </ImportGroup>
 </Project>

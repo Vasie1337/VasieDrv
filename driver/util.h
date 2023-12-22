@@ -6,8 +6,6 @@ public:
 	static bool DataCompare(const uint8_t* pData, const uint8_t* bMask, const char* szMask);
 	static uint64_t FindPattern(uint64_t dwAddress, uint64_t dwLen, uint8_t* bMask, char* szMask);
 	static bool ClearPFN(PMDL mdl);
-	static bool is_retop(uint8_t op);
-	static uint64_t scanforCodecaves(INT length);
 
 	template <typename str_type, typename str_type_2>
 	static bool crt_strcmp(str_type str, str_type_2 in_str, bool two);

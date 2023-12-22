@@ -7,7 +7,7 @@ void c_driver::initComm(LPCWSTR targetName)
 	LoadLibraryA("ntdll.dll");
 	*(void**)&Original = GetProcAddress(
 		GetModuleHandleA("win32u.dll"),
-		"NtUserCreateDesktopEx"
+		"NtUserFunctionalizeDisplayConfig"
 	);
 
 	PROCESSENTRY32 entry;
@@ -17,7 +17,6 @@ void c_driver::initComm(LPCWSTR targetName)
 		do {
 			if (!lstrcmpi(entry.szExeFile, targetName)) {
 				c_driver::targetPid = entry.th32ProcessID;
-				CloseHandle(hsnap);
 			}
 		} while (Process32Next(hsnap, &entry));
 	}
@@ -34,7 +33,7 @@ uint64_t c_driver::getBase()
 	d.type = BASE;
 	d.target = targetPid;
 
-	Original(&d, NULL, NULL, NULL, NULL, NULL);
+	Original((__int64)&d, NULL);
 
 	return targetBase = Buffer;
 }

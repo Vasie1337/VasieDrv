@@ -5,6 +5,7 @@
     <ClCompile Include="util.cpp" />
     <ClCompile Include="hook.cpp" />
     <ClCompile Include="process.cpp" />
+    <ClCompile Include="mem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="util.h" />
@@ -12,6 +13,38 @@
     <ClInclude Include="process.h" />
     <ClInclude Include="nt.h" />
     <ClInclude Include="ia32.hpp" />
-    <ClInclude Include="pe64.h" />
+    <ClInclude Include="mem.h" />
+    <ClInclude Include="..\3rd\VMProtect\VMProtectSDK.h">
+      <Filter>protect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\Themida\ThemidaSDK.h">
+      <Filter>protect</Filter>
+    </ClInclude>
+    <ClInclude Include="skCrypter.h">
+      <Filter>protect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\CodeVirtualizer\VirtualizerSDK.h">
+      <Filter>protect</Filter>
+    </ClInclude>
+    <ClInclude Include="junkcode.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\3rd\VMProtect\VMProtectSDK64.lib">
+      <Filter>protect</Filter>
+    </Library>
+    <Library Include="..\3rd\Themida\SecureEngineSDK64.lib">
+      <Filter>protect</Filter>
+    </Library>
+    <Library Include="..\3rd\CodeVirtualizer\VirtualizerSDK64.lib">
+      <Filter>protect</Filter>
+    </Library>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="protect">
+      <UniqueIdentifier>{d46c3eec-3cc9-4bc1-b7d4-f9c1fbf96320}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <MASM Include="junkcode.asm" />
   </ItemGroup>
 </Project>

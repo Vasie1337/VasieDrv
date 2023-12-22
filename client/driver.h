@@ -2,11 +2,14 @@
 #include <iostream>
 #include <Windows.h>
 #include <TlHelp32.h>
+#include <locale>
+#include <memory>
+#include <stdexcept>
 
 class c_driver
 {
 private:
-	static inline void* (__fastcall* Original)(void* a1, void* a2, void* a3, void* a4, void* a5, void* a6);
+	static inline __int64 (__fastcall* Original)(__int64 a1, __int64 a2);
 	enum type {
 		READ,
 		WRITE,
@@ -51,7 +54,7 @@ inline T c_driver::readMem(uint64_t Addres, SIZE_T Size)
 	d.type = READ;
 	d.target = targetPid;
 
-	Original(&d, NULL, NULL, NULL, NULL, NULL);
+	Original((__int64)&d, NULL);
 
 	return Buffer;
 }
@@ -67,5 +70,5 @@ inline void c_driver::writeMem(uint64_t Addres, T Buffer, SIZE_T Size)
 	d.type = WRITE;
 	d.target = targetPid;
 
-	Original(&d, NULL, NULL, NULL, NULL, NULL);
+	Original((__int64)&d, NULL);
 }

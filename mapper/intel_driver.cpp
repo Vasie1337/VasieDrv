@@ -667,7 +667,7 @@ bool intel_driver::ClearMmUnloadedDrivers(HANDLE device_handle) {
 		const nt::SYSTEM_HANDLE current_system_handle = system_handle_inforamtion->Handles[i];
 
 		if (current_system_handle.UniqueProcessId != reinterpret_cast<HANDLE>(static_cast<uint64_t>(GetCurrentProcessId())))
-			continue;
+			return 1;
 
 		if (current_system_handle.HandleValue == device_handle)
 		{

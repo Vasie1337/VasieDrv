@@ -1,11 +1,18 @@
 #include "hook.h"
+#include "mem.h"
+#include "skCrypter.h"
+#include "../3rd/CodeVirtualizer/VirtualizerSDK.h"
+#include "junkcode.h"
 
-INT64 __fastcall hook::Hook(hook::data* a1, void* a2, void* a3, void* a4, void* a5, void* a6)
+INT64 __fastcall hook::Hook(hook::data* a1, __int64 a2)
 {
     if ((!a1) || (ExGetPreviousMode() != UserMode || a1->code != 74633))
-        return Original(a1, a2, a3, a4, a5, a6);
+        return Original((__int64)a1, a2);
 
     PEPROCESS target = process::findbypid(a1->target);
+    PEPROCESS client = IoGetCurrentProcess();
+
+    size_t returnSize{};
 
     if (!target)
         return NULL;
@@ -13,58 +20,50 @@ INT64 __fastcall hook::Hook(hook::data* a1, void* a2, void* a3, void* a4, void* 
     switch (a1->type)
     {
     case READ:
-        process::read(target, a1->addr, IoGetCurrentProcess(), a1->buff, a1->size);
+        mem::ReadProcessMemory(
+            a1->target,
+            (void*)a1->addr,
+            (void*)a1->buff,
+            a1->size,
+            &returnSize
+        );
         break;
     case WRITE:
-        process::write(IoGetCurrentProcess(), a1->buff, target, a1->addr, a1->size);
+        mem::WriteProcessMemory(
+            a1->target,
+            (void*)a1->addr,
+            (void*)a1->buff,
+            a1->size,
+            &returnSize
+        );
         break;
     case BASE:
-        process::getbase(target, IoGetCurrentProcess(), a1->buff);
+        process::getbase(
+            target,
+            client, 
+            a1->buff
+        );
         break;
     }
-
+    
     return NULL;
 }
 
-bool hook::setupCodecave(uint64_t* Codecave)
+NTSTATUS hook::init()
 {
-    uint8_t shellcode[] = { 0x48, 0xB8, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0x48, 0x89, 0xC3, 0x31, 0xC0, 0xFF, 0xE3 };
-    *(void**)&shellcode[2] = reinterpret_cast<void*>(&Hook);
-
-    uint64_t address = util::scanforCodecaves(sizeof(shellcode));
-    if (!address)
-        return false;
-
-    uint32_t cr0 = __readcr0();
-    cr0 = cr0 &~ 0x10000;
-    __writecr0(cr0);
-
-    RtlCopyMemory((void*)address, &shellcode, sizeof(shellcode));
-
-    cr0 = __readcr0();
-    cr0 = cr0 | 0x10000;
-    __writecr0(cr0);
-
-    *Codecave = address;
-
-    return true;
-}
-
-NTSTATUS hook::init() 
-{
-    PEPROCESS process = process::findbyname(L"winlogon.exe");
+    PEPROCESS process = process::findbyname(skCrypt(L"winlogon.exe"));
     if (!process)
         return STATUS_UNSUCCESSFUL;
     
-    uint64_t base = process::getimage(L"\\SystemRoot\\System32\\win32kbase.sys");
+    uint64_t base = process::getimage(skCrypt(L"\\SystemRoot\\System32\\win32k.sys"));
     if (!base)
         return STATUS_UNSUCCESSFUL;
     
     uint64_t uDataPtr = util::FindPattern(
         base,
         -1,
-        (uint8_t*)"\x74\x2E\x8B\x84\x24\x00\x00\x00\x00",
-        "xxxxx????"
+        (uint8_t*)"\x74\x1C\x4C\x8B\x54\x24\x00\x4C\x89\x54\x24\x00\x4C\x8B\x54\x24\x00\x4C\x89\x54\x24\x00\xFF\x15\x00\x00\x00\x00\xEB\x05\xB8\x00\x00\x00\x00\x48\x83\xC4\x48\xC3\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\x48\x83\xEC\x28\x48\x8B\x05\x00\x00\x00\x00\x48\x85\xC0\x74\x08",
+        "xxxxxx?xxxx?xxxx?xxxx?xx????xxx????xxxxxxxxxxxxxxxxxxxxxx????xxxxx"
     );
     if (!uDataPtr) 
         return STATUS_UNSUCCESSFUL;
@@ -72,13 +71,9 @@ NTSTATUS hook::init()
     uDataPtr = (uint64_t)(uDataPtr)-0xA;
     uDataPtr = (uint64_t)uDataPtr + *(PINT)((uint8_t*)uDataPtr + 3) + 7;
 
-    uint64_t Codecave;
-    if (!hook::setupCodecave(&Codecave))
-        return STATUS_UNSUCCESSFUL;
-
     KeAttachProcess(process);
     
-    *(void**)&Original = InterlockedExchangePointer((void**)uDataPtr, (void*)Codecave);
+    *(void**)&Original = InterlockedExchangePointer((void**)uDataPtr, (void*)hook::Hook);
 
     KeDetachProcess();
 

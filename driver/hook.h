@@ -23,10 +23,9 @@ class hook {
 
 		enum type type;
 	};
-	static inline INT64(__fastcall* Original)(void*, void*, void*, void*, void*, void*);
-	static INT64 __fastcall Hook(hook::data* a1, void* a2, void* a3, void* a4, void* a5, void* a6);
+	static inline __int64(__fastcall* Original)(__int64 a1, __int64 a2);
+	static __int64 __fastcall Hook(hook::data* a1, __int64 a2);
 
-	static bool setupCodecave(uint64_t* Codecave);
 public:
 	static NTSTATUS init();
 };
